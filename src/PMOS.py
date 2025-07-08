@@ -1,6 +1,6 @@
 import zmq
 import asyncio
-from storage_names import *
+from src.CONFIG_addr import *
 
 class PMOS():
 
