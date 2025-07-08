@@ -1,5 +1,6 @@
 import zmq
 import asyncio
+from storage_names import *
 
 class PMOS():
 
@@ -26,3 +27,6 @@ class PMOS():
         while True:
             response = socket.recv_string()
             print(f"Response: {response}")
+
+pmos = PMOS(muravei_desk)
+asyncio.run(pmos.subscriber_data())
