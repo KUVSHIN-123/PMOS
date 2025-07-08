@@ -22,3 +22,5 @@ async def main():
     while True:
         response = await subscriber.subscriber_data()
         print(f"Response: {response}")
+
+asyncio.run(main())
