@@ -24,7 +24,7 @@ class Client_STREAM:
 
 async def main():
     client = Client_STREAM()
-    data = "5 + "
+    data = "5"
     await client.send_message(data)
     responce = await client.reciv_message()
     print(responce.decode('utf-8'))
