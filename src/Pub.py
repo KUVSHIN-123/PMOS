@@ -5,22 +5,27 @@ from CONFIG_addr import *
 class Pub():
 
     def __init__(self, ip_addr = "localhost", port = "2000", topic = "default_topic"):
-        self.ip_address = ip_addr
-        self.port = port
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PUB)
+        self.socket.bind(f"tcp://{ip_addr}:{port}")
         self.topic = topic 
 
     async def publisher_data(self,data):
-        context = zmq.Context()
-        socket = context.socket(zmq.PUB)
-        socket.bind(f"tcp://{self.ip_address}:{self.port}")
         message = f"{self.topic} {data}"
-        socket.send_string(message)
-        print(f"Data: {data} send!")
+        try:
+            self.socket.send_string(message)
+            return 1
+        except:
+            return 0
 
 async def main():
     publisher = Pub(muravei_desk)
     while True:
         data = input()
-        await publisher.publisher_data(data)
+        result = await publisher.publisher_data(data)
+        if result == 1:
+            print(f"Data: {data} send!")
+        else:
+            print(f"Data not send!")
 
 asyncio.run(main())
