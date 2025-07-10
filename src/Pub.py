@@ -1,6 +1,7 @@
 import zmq
 import asyncio
 from CONFIG_addr import *
+from serialize import *
 
 class Pub():
 
@@ -8,15 +9,19 @@ class Pub():
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
         self.socket.bind(f"tcp://{ip_addr}:{port}")
-        self.topic = topic 
+        self.topic = topic
 
     async def publisher_data(self,data):
-        message = f"{self.topic} {data}"
+        data_byte = await packing(str,data)
+        topic_byte = await packing(str,self.topic)
+        message = [topic_byte,data_byte]
+        print(message)
         try:
-            self.socket.send_string(message)
+            self.socket.send_multipart(message)
             return 1
         except:
-            return 0
+            return 0 
+
 
 async def main():
     publisher = Pub(muravei_desk)
@@ -25,7 +30,9 @@ async def main():
         result = await publisher.publisher_data(data)
         if result == 1:
             print(f"Data: {data} send!")
+            pass
         else:
             print(f"Data not send!")
+            pass
 
 asyncio.run(main())

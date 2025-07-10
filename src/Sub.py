@@ -1,20 +1,20 @@
 import zmq
 import asyncio
 from CONFIG_addr import *
+from serialize import *
 
 class Sub():
 
     def __init__(self, ip_addr = "localhost", port = "2000", topic = "default_topic"):
-        self.ip_address = ip_addr
-        self.port = port
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.SUB)
+        self.socket.connect(f"tcp://{ip_addr}:{port}")
+        self.socket.setsockopt_string(zmq.SUBSCRIBE,f"{topic}")
         self.topic = topic 
 
     async def subscriber_data(self):
-        context = zmq.Context()
-        socket = context.socket(zmq.SUB)
-        socket.connect(f"tcp://{self.ip_address}:{self.port}")
-        socket.setsockopt_string(zmq.SUBSCRIBE,f"{self.topic}")
-        response = socket.recv_string()
+        response = self.socket.recv_multipart()
+        response = await 
         return response
 
 async def main():
