@@ -6,11 +6,11 @@ import pickle
 """
 Класс отвечает за отправку запроса на сервер и получения ответа.
 """
-class Client:
-    def __init__(self, socket_addr = "tcp://localhost:5555"):
+class Client_REQ:
+    def __init__(self, socket_addr = "localhost", port = "5555"):
         self.context = Context()
         self.socket = self.context.socket(REQ)
-        self.socket.connect(socket_addr)
+        self.socket.connect(f"tcp://{socket_addr}:{port}")
 
     """Функция отвечает за отправку сообщений (форма данных любой)"""
     async def send_request(self, data):
@@ -29,7 +29,7 @@ class Client:
 
 
 async def main():
-    client = Client()
+    client = Client_REQ()
     data = "5 + "
     await client.send_request(data)
     responce = await client.recv_responce()

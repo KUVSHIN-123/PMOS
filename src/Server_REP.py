@@ -7,11 +7,11 @@ import pickle
 """
 Класс отвечает за получение сообщения от клиета
 """
-class Server:
-    def __init__(self, socket_addr = "tcp://localhost:5555"):
+class Server_REP:
+    def __init__(self, socket_addr = "localhost", port = "555"):
         self.context = Context()
         self.socket = self.context.socket(REP)
-        self.socket.bind(socket_addr)
+        self.socket.bind(f"tcp://{socket_addr}:{port}")
 
     """Функция отвечает за обработку получения сообщения"""
     async def handler_request(self):
@@ -31,7 +31,7 @@ class Server:
 
 
 async def main():
-    server = Server()
+    server = Server_REP()
     while True:
         data = await server.handler_request()
         data += "5"
