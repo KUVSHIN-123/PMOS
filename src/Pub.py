@@ -12,9 +12,9 @@ class Pub():
         self.topic = topic
 
     async def publisher_data(self,data):
-        data_byte = await packing(str,data)
-        topic_byte = await packing(str,self.topic)
-        message = [topic_byte,data_byte]
+        data_type,data_byte = await packing(data)
+        _,topic_byte = await packing(self.topic)
+        message = [topic_byte,data_type,data_byte]
         print(message)
         try:
             self.socket.send_multipart(message)

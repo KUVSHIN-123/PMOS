@@ -13,8 +13,8 @@ class Sub():
         self.topic = topic 
 
     async def subscriber_data(self):
-        response = self.socket.recv_multipart()[1]
-        response = await unpacking(str,response) 
+        message = self.socket.recv_multipart()
+        response = await unpacking(message[1],message[2]) 
         return response
 
 async def main():
