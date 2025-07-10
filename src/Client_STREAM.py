@@ -1,6 +1,7 @@
 from zmq import  STREAM, IDENTITY
 from zmq.asyncio import Context
 import asyncio
+import msgpack
 
 
 class Client_STREAM:
@@ -11,11 +12,13 @@ class Client_STREAM:
         self.socket.setsockopt(IDENTITY, identity)
 
     async def send_message(self, data):
-        await self.socket.send(data)
+        packed_data = msgpack.packb(data)
+        await self.socket.send_multipart([b"", packed_data])
 
     async def reciv_message(self):
-        identity, empty, message = await self.socket.recv_multipart()
-        return message
+        identity, data = await self.socket.recv_multipart()
+        unpacked = msgpack.unpackb(data)
+        return unpacked
     
     async def close(self):
         self.socket.close()
@@ -27,7 +30,7 @@ async def main():
     data = "5"
     await client.send_message(data)
     responce = await client.reciv_message()
-    print(responce.decode('utf-8'))
+    print(responce)
         
 
 if __name__ == "__main__":

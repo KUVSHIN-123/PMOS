@@ -1,6 +1,8 @@
 from zmq import  STREAM
 from zmq.asyncio import Context
 import asyncio
+import msgpack
+
 
 
 class Server_STREAM:
@@ -11,11 +13,19 @@ class Server_STREAM:
 
     async def reciv_message(self):
         while True:
-            self.identity, message = await self.socket.recv_multipart()
-            return message
+            self.identity, data = await self.socket.recv_multipart()
+            print(f"1{data}")
+            data = msgpack.unpackb(data)
+            print(f"2{data}")
+            data = msgpack.packb(data)
+            print(f"3{data}")
+            await self.socket.send_multipart([self.identity, b"", data])
+            # return data
 
-    async def send_message(self, data):
-       await self.socket.send_multipart([self.identity, b"", data])
+    # async def send_message(self, data):
+    #    data = msgpack.packb(data)
+    #    print(f"3{data}")
+    #    await self.socket.send_multipart([self.identity, b"", data])
 
     async def close(self):
         self.socket.close()
@@ -25,8 +35,8 @@ class Server_STREAM:
 async def main():
     server = Server_STREAM()
     while True:
-        data = await server.reciv_message()
-        await server.send_message(data)
+        await server.reciv_message()
+        # await server.send_message(data)
 
 
 

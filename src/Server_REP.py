@@ -1,14 +1,14 @@
 from zmq import REP
 from zmq.asyncio import Context
 import asyncio
-import pickle
+import msgpack
 
 
 """
 Класс отвечает за получение сообщения от клиета
 """
 class Server_REP:
-    def __init__(self, socket_addr = "localhost", port = "555"):
+    def __init__(self, socket_addr = "localhost", port = "5555"):
         self.context = Context()
         self.socket = self.context.socket(REP)
         self.socket.bind(f"tcp://{socket_addr}:{port}")
@@ -16,13 +16,13 @@ class Server_REP:
     """Функция отвечает за обработку получения сообщения"""
     async def handler_request(self):
         request = await self.socket.recv()
-        data = pickle.loads(request)
+        data = msgpack.unpackb(request)
         return data
     
     """Функция отвечает за отправку ответа"""   
     async def send_responce(self, data):
         response = data
-        await self.socket.send(pickle.dumps(response))
+        await self.socket.send(msgpack.packb(response))
 
     """Закртие подключения"""
     async def close(self):
