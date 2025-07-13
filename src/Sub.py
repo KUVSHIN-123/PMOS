@@ -4,7 +4,6 @@ from CONFIG_addr import *
 from serialize import *
 
 class Sub():
-
     def __init__(self, ip_addr = "localhost", port = "2000", topic = "default_topic"):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
@@ -13,14 +12,14 @@ class Sub():
         self.topic = topic 
 
     async def subscriber_data(self):
-        message = self.socket.recv_multipart()
-        response = await unpacking(message[1],message[2]) 
-        return response
+        topic, message = self.socket.recv_multipart()
+        response = deserialize(message)
+        return topic.decode("utf-8"), response
 
 async def main():
-    subscriber = Sub(muravei_desk)
+    subscriber = Sub()
     while True:
-        response = await subscriber.subscriber_data()
+        topic, response = await subscriber.subscriber_data()
         print(f"Response: {response}")
 
 asyncio.run(main())

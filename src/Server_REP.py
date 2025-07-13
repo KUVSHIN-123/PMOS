@@ -1,13 +1,13 @@
 from zmq import REP
 from zmq.asyncio import Context
 import asyncio
-import msgpack
+from serialize import *
 
 
 """
 Класс отвечает за получение сообщения от клиета
 """
-class Server_REP:
+class ServerREP:
     def __init__(self, socket_addr = "localhost", port = "5555"):
         self.context = Context()
         self.socket = self.context.socket(REP)
@@ -16,13 +16,12 @@ class Server_REP:
     """Функция отвечает за обработку получения сообщения"""
     async def handler_request(self):
         request = await self.socket.recv()
-        data = msgpack.unpackb(request)
+        data = deserialize(request)
         return data
     
     """Функция отвечает за отправку ответа"""   
     async def send_responce(self, data):
-        response = data
-        await self.socket.send(msgpack.packb(response))
+        await self.socket.send(serialize(data))
 
     """Закртие подключения"""
     async def close(self):
@@ -31,7 +30,7 @@ class Server_REP:
 
 
 async def main():
-    server = Server_REP()
+    server = ServerREP()
     while True:
         data = await server.handler_request()
         data += "5"

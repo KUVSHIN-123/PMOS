@@ -3,8 +3,8 @@ import asyncio
 from CONFIG_addr import *
 from serialize import *
 
-class Pub():
 
+class Pub():
     def __init__(self, ip_addr = "localhost", port = "2000", topic = "default_topic"):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
@@ -12,19 +12,20 @@ class Pub():
         self.topic = topic
 
     async def publisher_data(self,data):
-        data_type,data_byte = await packing(data)
-        _,topic_byte = await packing(self.topic)
-        message = [topic_byte,data_type,data_byte]
-        print(message)
+        binary_data = serialize(data)
         try:
-            self.socket.send_multipart(message)
+            self.socket.send_multipart([
+                self.topic.encode("utf-8"),
+                binary_data
+            ])
             return 1
         except:
-            return 0 
+            return 0
+
 
 
 async def main():
-    publisher = Pub(muravei_desk)
+    publisher = Pub()
     while True:
         data = input()
         result = await publisher.publisher_data(data)

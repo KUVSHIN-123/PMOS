@@ -1,12 +1,12 @@
 from zmq import REQ
 from zmq.asyncio import Context
 import asyncio
-import msgpack
+from serialize import *
 
 """
 Класс отвечает за отправку запроса на сервер и получения ответа.
 """
-class Client_REQ:
+class ClientREQ:
     def __init__(self, socket_addr = "localhost", port = "5555"):
         self.context = Context()
         self.socket = self.context.socket(REQ)
@@ -14,12 +14,12 @@ class Client_REQ:
 
     """Функция отвечает за отправку сообщений (форма данных любой)"""
     async def send_request(self, data):
-        await self.socket.send(msgpack.packb(data))
+        await self.socket.send(serialize(data))
 
     """Функия отвечается за получение ответа от сервера (формат данных любой)"""
     async def recv_responce(self):
         data = await self.socket.recv()
-        responce = msgpack.unpackb(data)
+        responce = deserialize(data)
         return responce
     
     """Закртие подключения"""
@@ -29,7 +29,7 @@ class Client_REQ:
 
 
 async def main():
-    client = Client_REQ()
+    client = ClientREQ()
     data = "5 + "
     await client.send_request(data)
     responce = await client.recv_responce()
